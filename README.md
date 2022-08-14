@@ -114,7 +114,7 @@ server {
 
 ### # 配置v2ray，执行如下命令即可添加v2ray配置文件
 ```
-echo '
+echo "
 {
   "log" : {
     "access": "/var/log/v2ray/access.log",
@@ -170,9 +170,11 @@ echo '
     }
   }
 }
-' > $v2rayConfig
+" > $v2rayConfig
+```
 
-# 默认配置vmess协议，如果指定vless协议则配置vless协议
+### # 默认配置vmess协议，如果指定vless协议则配置vless协议
+```
 [ "vless" = "$2" ] && sed -i 's/vmess/vless/' $v2rayConfig
 ```
 
@@ -195,3 +197,25 @@ echo "路径: $path"
 ```
 
 ### # 注：为适应v2ray-core目前和未来的版本更新，vmess协议额外ID选项已移除，客户端vmess协议额外id配置为0即可，当前最新版v2rayN客户端已默认为0
+
+### #网络参数优化
+```
+echo "
+fs.file-max = 1000000
+fs.inotify.max_user_instances = 8192
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.ip_local_port_range = 1024 65535
+net.ipv4.tcp_rmem = 16384 262144 8388608
+net.ipv4.tcp_wmem = 32768 524288 16777216
+net.core.somaxconn = 8192
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.core.wmem_default = 2097152
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_max_syn_backlog = 10240
+net.core.netdev_max_backlog = 10240
+net.ipv4.tcp_slow_start_after_idle = 0
+# forward ipv4
+net.ipv4.ip_forward = 1
+">>/etc/sysctl.conf
+```
